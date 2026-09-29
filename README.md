@@ -400,13 +400,13 @@ If you use SSH, first transfer the key securely to the web server and restrict i
 On the machine holding the key:
 
 ```bash
-chmod 400 LearnWithMithran.pem
+chmod 400 us-east-01.pem
 ```
 
 Connect using the private IP of the app server:
 
 ```bash
-ssh -i LearnWithMithran.pem ec2-user@10.0.4.162
+ssh -i us-east-01.pem ec2-user@10.0.4.162
 ```
 
 Replace the key filename and private IP with your actual values. Ensure the security groups permit the SSH path you have chosen.
@@ -557,38 +557,6 @@ For the full two-AZ setup, deploy the same frontend content to both web instance
 
 ---
 
-## Application Request Flow
-
-1. A user opens the application domain in a browser.
-2. Route 53 resolves the domain to the internet-facing Web ALB.
-3. The Web ALB forwards the request to a healthy web server.
-4. The web server serves the frontend files.
-5. The frontend makes an API request to the internal App ALB through the web tier's configured network path.
-6. The internal App ALB forwards the request to a healthy Flask app server on port `5000`.
-7. The Flask application queries RDS MySQL on port `3306`.
-8. The database returns the requested data to Flask.
-9. Flask returns the API response, and the frontend displays the data to the user.
-
-## Validation and Testing
-
-Use this checklist after deployment.
-
-- [ ] VPC contains all six subnets across two AZs.
-- [ ] Public route table is associated with both web subnets and routes to the Internet Gateway.
-- [ ] Each app subnet has a private route table and the intended NAT route.
-- [ ] DB subnets are private and are included in the RDS DB subnet group.
-- [ ] Web ALB is internet-facing and its target group reports healthy targets.
-- [ ] Internal App ALB is internal and its target group reports healthy app targets.
-- [ ] ACM certificate is issued and attached to the HTTPS listener.
-- [ ] Route 53 application record points to the Web ALB.
-- [ ] RDS is not publicly accessible.
-- [ ] App instances can connect to RDS on port 3306.
-- [ ] Flask `/health` endpoint returns the expected response.
-- [ ] Flask data endpoint returns expected records.
-- [ ] The frontend loads and displays the API data.
-- [ ] Security groups allow only the required traffic.
-- [ ] Logs and health checks are reviewed if a request fails.
-
 ## Security Recommendations
 
 - Never commit `.pem` files, passwords, database connection strings, access keys, or secret values.
@@ -624,36 +592,6 @@ aws-three-tier-web-application/
 │   └── application-ui.png
 └── .gitignore
 ```
-
-Example `requirements.txt`:
-
-```text
-Flask
-mysql-connector-python
-flask-cors
-gunicorn
-```
-
-Example `.gitignore`:
-
-```gitignore
-# Secrets and SSH keys
-*.pem
-.env
-.env.*
-!.env.example
-
-# Python
-__pycache__/
-*.py[cod]
-venv/
-.venv/
-
-# Logs
-*.log
-```
-
-Only add screenshots and source files that do not expose credentials, personal information, or sensitive infrastructure details.
 
 ## Cleanup
 
