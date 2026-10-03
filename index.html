@@ -1,0 +1,588 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Management | AWS</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Inter, "Segoe UI", Arial, sans-serif;
+      background: #f4f7fc;
+      color: #172033;
+      min-height: 100vh;
+    }
+
+    .layout {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 245px;
+      background: #14213d;
+      color: white;
+      padding: 28px 18px;
+      flex-shrink: 0;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 0 10px 32px;
+      font-size: 19px;
+      font-weight: 700;
+    }
+
+    .brand-icon {
+      width: 40px;
+      height: 40px;
+      display: grid;
+      place-items: center;
+      border-radius: 12px;
+      background: #4f75ef;
+      font-size: 21px;
+    }
+
+    .nav-label {
+      padding: 12px 12px 10px;
+      color: #9baac6;
+      font-size: 11px;
+      letter-spacing: 1.3px;
+      font-weight: 700;
+    }
+
+    .nav-item {
+      padding: 13px 14px;
+      margin-bottom: 7px;
+      border-radius: 9px;
+      color: #d0d9ea;
+      font-size: 14px;
+    }
+
+    .nav-item.active {
+      color: white;
+      background: #304b86;
+      font-weight: 600;
+    }
+
+    .sidebar-bottom {
+      margin-top: 45px;
+      padding: 15px 12px;
+      border-top: 1px solid #34415c;
+      color: #b9c5d9;
+      font-size: 12px;
+      line-height: 1.8;
+    }
+
+    /* Main */
+    .main {
+      flex: 1;
+      min-width: 0;
+      padding: 30px 38px;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 34px;
+    }
+
+    .topbar h1 {
+      font-size: 25px;
+      font-weight: 700;
+    }
+
+    .topbar p {
+      margin-top: 6px;
+      font-size: 13px;
+      color: #7b8497;
+    }
+
+    .admin {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: white;
+      padding: 9px 14px;
+      border: 1px solid #e9edf4;
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .avatar {
+      width: 34px;
+      height: 34px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: #e5ebff;
+      color: #3656c9;
+      font-weight: 700;
+    }
+
+    .welcome {
+      margin-bottom: 24px;
+    }
+
+    .welcome h2 {
+      font-size: 19px;
+      margin-bottom: 6px;
+    }
+
+    .welcome p {
+      color: #7b8497;
+      font-size: 13px;
+    }
+
+    /* Statistics */
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+      margin-bottom: 28px;
+    }
+
+    .stat-card {
+      background: white;
+      border: 1px solid #edf0f6;
+      border-radius: 14px;
+      padding: 22px;
+      box-shadow: 0 3px 15px rgba(31, 47, 80, .04);
+    }
+
+    .stat-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      color: #788398;
+      font-size: 13px;
+    }
+
+    .stat-icon {
+      width: 40px;
+      height: 40px;
+      display: grid;
+      place-items: center;
+      border-radius: 11px;
+      font-size: 20px;
+    }
+
+    .blue { background: #e9efff; }
+    .green { background: #e5f8ef; }
+    .orange { background: #fff1dc; }
+
+    .stat-value {
+      font-size: 29px;
+      font-weight: 750;
+      margin-top: 14px;
+      color: #172033;
+    }
+
+    .stat-note {
+      color: #929bad;
+      font-size: 12px;
+      margin-top: 5px;
+    }
+
+    /* Table */
+    .panel {
+      background: white;
+      border: 1px solid #edf0f6;
+      border-radius: 14px;
+      box-shadow: 0 3px 15px rgba(31, 47, 80, .04);
+      overflow: hidden;
+    }
+
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+      padding: 21px 23px;
+      flex-wrap: wrap;
+    }
+
+    .panel-title h2 {
+      font-size: 17px;
+    }
+
+    .panel-title p {
+      font-size: 12px;
+      color: #8992a3;
+      margin-top: 5px;
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .search {
+      width: 230px;
+      max-width: 100%;
+      padding: 10px 13px;
+      border: 1px solid #dfe5ef;
+      border-radius: 8px;
+      outline: none;
+      font-size: 13px;
+    }
+
+    .search:focus {
+      border-color: #5275ec;
+      box-shadow: 0 0 0 3px #5275ec20;
+    }
+
+    .refresh {
+      background: #4569e8;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 15px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .refresh:hover { background: #3455cc; }
+    .refresh:disabled { opacity: .6; cursor: wait; }
+
+    .table-wrap {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 490px;
+    }
+
+    thead {
+      background: #f8f9fc;
+    }
+
+    th {
+      padding: 14px 22px;
+      text-align: left;
+      color: #7a8498;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .7px;
+      font-weight: 700;
+    }
+
+    td {
+      padding: 16px 22px;
+      border-top: 1px solid #f0f2f6;
+      font-size: 13px;
+      color: #4b566b;
+    }
+
+    tbody tr:hover { background: #fafbff; }
+
+    .student {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      color: #202c42;
+      font-weight: 600;
+    }
+
+    .student-avatar {
+      height: 35px;
+      width: 35px;
+      display: grid;
+      place-items: center;
+      border-radius: 10px;
+      background: #edf0ff;
+      color: #536cdb;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .id-badge {
+      background: #f0f3f9;
+      padding: 5px 9px;
+      border-radius: 6px;
+      color: #58647a;
+      font-size: 12px;
+    }
+
+    .status {
+      background: #e7f8ee;
+      color: #21864e;
+      padding: 5px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .message {
+      padding: 35px 15px;
+      text-align: center;
+      color: #7b8497;
+      font-size: 13px;
+    }
+
+    .error { color: #c43b3b; }
+
+    .footer {
+      text-align: center;
+      padding: 22px 10px;
+      font-size: 11px;
+      color: #929bad;
+    }
+
+    @media (max-width: 850px) {
+      .sidebar { width: 190px; }
+      .main { padding: 24px 20px; }
+      .stats { grid-template-columns: 1fr 1fr; }
+    }
+
+    @media (max-width: 600px) {
+      .sidebar { display: none; }
+      .main { padding: 20px 14px; }
+      .topbar h1 { font-size: 21px; }
+      .stats { grid-template-columns: 1fr; }
+      .panel-header { align-items: flex-start; }
+      .actions { width: 100%; }
+      .search { flex: 1; width: 100%; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="layout">
+
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-icon">🎓</div>
+        <span>EduPanel</span>
+      </div>
+
+      <div class="nav-label">MAIN MENU</div>
+      <div class="nav-item active">▦ &nbsp; Dashboard</div>
+      <div class="nav-item">♙ &nbsp; Students</div>
+      <div class="nav-item">▤ &nbsp; Reports</div>
+
+      <div class="sidebar-bottom">
+        <div>☁ AWS Infrastructure</div>
+        <div>Three-Tier Application</div>
+        <div style="margin-top:10px;color:#67d99a">● Application online</div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div>
+          <h1>Dashboard</h1>
+          <p>Student management overview</p>
+        </div>
+        <div class="admin">
+          <div class="avatar">A</div>
+          <span>Administrator</span>
+        </div>
+      </header>
+
+      <section class="welcome">
+        <h2>Welcome back! 👋</h2>
+        <p>Here is the latest overview of your student records.</p>
+      </section>
+
+      <section class="stats">
+        <div class="stat-card">
+          <div class="stat-top">
+            <span>Total Students</span>
+            <div class="stat-icon blue">👨‍🎓</div>
+          </div>
+          <div class="stat-value" id="total">—</div>
+          <div class="stat-note">Records retrieved from MySQL</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-top">
+            <span>Database Status</span>
+            <div class="stat-icon green">🗄️</div>
+          </div>
+          <div class="stat-value" id="dbStatus" style="font-size:22px">Checking</div>
+          <div class="stat-note">API connection status</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-top">
+            <span>Displayed Records</span>
+            <div class="stat-icon orange">📋</div>
+          </div>
+          <div class="stat-value" id="displayed">—</div>
+          <div class="stat-note">Matching search results</div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-header">
+          <div class="panel-title">
+            <h2>Student Records</h2>
+            <p>Student details retrieved from your database</p>
+          </div>
+          <div class="actions">
+            <input
+              class="search"
+              id="search"
+              type="search"
+              placeholder="Search students..."
+              aria-label="Search students"
+            >
+            <button class="refresh" id="refresh">↻ Refresh</button>
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Student</th>
+                <th>Email Address</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="studentTable">
+              <tr><td colspan="4" class="message">Loading student records...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <div class="footer">
+        AWS Three-Tier Architecture · Student Management Dashboard
+      </div>
+    </main>
+  </div>
+
+  <script>
+    // The frontend and API share the same public origin.
+    const API_URL = "/api/students";
+
+    const table = document.getElementById("studentTable");
+    const search = document.getElementById("search");
+    const refreshBtn = document.getElementById("refresh");
+
+    let students = [];
+
+    function escapeHTML(value) {
+      return String(value ?? "").replace(/[&<>"']/g, char => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+      })[char]);
+    }
+
+    function renderStudents() {
+      const term = search.value.trim().toLowerCase();
+
+      const filtered = students.filter(student =>
+        String(student.id ?? "").toLowerCase().includes(term) ||
+        String(student.username ?? "").toLowerCase().includes(term) ||
+        String(student.email ?? "").toLowerCase().includes(term)
+      );
+
+      document.getElementById("displayed").textContent = filtered.length;
+
+      if (filtered.length === 0) {
+        table.innerHTML = `
+          <tr><td colspan="4" class="message">
+            No matching student records found.
+          </td></tr>`;
+        return;
+      }
+
+      table.innerHTML = filtered.map(student => {
+        const name = String(student.username ?? "");
+        const initial = name.trim().charAt(0).toUpperCase() || "?";
+
+        return `
+          <tr>
+            <td><span class="id-badge">#${escapeHTML(student.id)}</span></td>
+            <td>
+              <div class="student">
+                <div class="student-avatar">${escapeHTML(initial)}</div>
+                ${escapeHTML(name)}
+              </div>
+            </td>
+            <td>${escapeHTML(student.email)}</td>
+            <td><span class="status">● Active</span></td>
+          </tr>`;
+      }).join("");
+    }
+
+    async function loadStudents() {
+      refreshBtn.disabled = true;
+      refreshBtn.textContent = "Loading...";
+      document.getElementById("dbStatus").textContent = "Checking";
+      table.innerHTML = `
+        <tr><td colspan="4" class="message">
+          Fetching student records...
+        </td></tr>`;
+
+      try {
+        const response = await fetch(API_URL, {
+          method: "GET",
+          headers: { "Accept": "application/json" },
+          cache: "no-store"
+        });
+
+        if (!response.ok) {
+          throw new Error("API returned HTTP " + response.status);
+        }
+
+        const result = await response.json();
+
+        if (result.success !== true || !Array.isArray(result.students)) {
+          throw new Error("Invalid API response");
+        }
+
+        students = result.students;
+        document.getElementById("total").textContent =
+          result.count ?? students.length;
+        document.getElementById("dbStatus").textContent = "Connected";
+
+        renderStudents();
+      } catch (error) {
+        students = [];
+        document.getElementById("total").textContent = "—";
+        document.getElementById("displayed").textContent = "—";
+        document.getElementById("dbStatus").textContent = "Error";
+        table.innerHTML = `
+          <tr><td colspan="4" class="message error">
+            Unable to load student records. Check the API connection
+            and try refreshing.
+          </td></tr>`;
+        console.error("Student API error:", error);
+      } finally {
+        refreshBtn.disabled = false;
+        refreshBtn.textContent = "↻ Refresh";
+      }
+    }
+
+    search.addEventListener("input", renderStudents);
+    refreshBtn.addEventListener("click", loadStudents);
+
+    loadStudents();
+  </script>
+</body>
+</html>
