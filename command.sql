@@ -1,0 +1,20 @@
+show DATABASES;
+
+use Database;
+
+show Tables;
+
+CREATE TABLE student (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(50) NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    email VARCHAR(100) NOT NULL
+);
+
+INSERT INTO student (username, password, email)
+VALUES
+('Mukesh', 'Sensitive123#', 'mukesh@example.com'),
+('Kavya', 'Kavya&123', 'kavya@example.com'),
+('Bavin', 'Bavin123', 'bavin@example.com');
+
+SELECT * FROM student;
